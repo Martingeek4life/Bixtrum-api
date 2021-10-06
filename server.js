@@ -40,7 +40,7 @@ let tasks = [
 ];
 
 app.use(bodyParser.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
+app.use('/Bixtrum-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
 
 app.post('/api/user', (req, res) => {
    const user = req.body.User;
