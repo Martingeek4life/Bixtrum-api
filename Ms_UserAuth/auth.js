@@ -1,8 +1,9 @@
+const bcrypt = require("bcrypt");
 const DB_connexion = require('../DB_connection/Db_connection');
 var user_model = require('../Endpoint_models/user');
 DB_connexion.DbConnexion();
 async function signIn(Payload, res) {
-    const userData = {
+    var userData = {
         name: Payload.name,
         surname: Payload.surname,
         email: Payload.email,
@@ -17,12 +18,20 @@ async function signIn(Payload, res) {
         message: "ok",
         status_code: 200
     };
-    let userSign = new user_model(userData);
-    userSign.save(function (err, data) {
-    	if (err) return res.json(err);
-
-        res.json(successUserData);
-      });
+    const saltRounds = 10;
+    console.log("avant le hash", userData.password);
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        bcrypt.hash(userData.password, salt, (err, hash) => {
+            userData.password = hash;
+            console.log("après le hash", userData.password);
+            let userSign = new user_model(userData);
+            userSign.save(function (err, data) {
+                if (err) return res.json({ message: "email already exist" });
+                // else if(err.code != 11000) return res.json({ message: "failed to save" });
+                else res.json(data);
+              });
+        });
+    });
 }
 
 async function logIn(Payload, res) {
@@ -31,10 +40,17 @@ async function logIn(Payload, res) {
         password: Payload.password
     };
 
-    user_model.find().where('email').equals(userData.email).where('password').equals(userData.password).exec(function (err, model) {
-    	if (err) return res.json(err);
-    	console.log("data", model);
-        res.json(model);
+    user_model.find().where('email').equals(userData.email).exec(function (err, model) {
+        if(model.length == 0) return res.status(400).json({ message: "Email does not exist" });
+        // console.log("model from DB", model);
+        bcrypt.compare(userData.password, model[0].password, function(err1, bool) {
+            if(bool == true) {
+                if (err) return res.json(err);
+                console.log("data", model);
+                res.json(model);
+            }
+            else res.status(400).json({ message: "Invalid Password" });
+        });
     });
 }
 
