@@ -50,7 +50,7 @@ async function logIn(Payload, res) {
             if(bool == true) {
                 if (err) return res.json(err);
                 console.log("data", model);
-                res.json(model);
+                res.json(model[0]);
             }
             else res.status(400).json({ message: "Invalid Password" });
         });
