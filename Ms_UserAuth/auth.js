@@ -4,18 +4,20 @@ var user_model = require('../Endpoint_models/user');
 DB_connexion.DbConnexion();
 async function signIn(Payload, res) {
     var userData = {
-        name: Payload.name,
-        surname: Payload.surname,
-        email: Payload.email,
-        password: Payload.password
-    };
-
-    const successUserData = {
-        name: Payload.name,
-        surname: Payload.surname,
         email: Payload.email,
         password: Payload.password,
-        message: "ok",
+        role: Payload.role,
+        isValid: Payload.isValid,
+        uniqueString: Payload.uniqueString
+    };
+    console.log("var userData: ", userData);
+    const successUserData = {
+        email: Payload.email,
+        password: Payload.password,
+        role: Payload.role,
+        isvalid: Payload.isvalid,
+        uniqueString: Payload.uniqueString,
+        message: "user registered successfully",
         status_code: 200
     };
     const saltRounds = 10;
@@ -25,8 +27,9 @@ async function signIn(Payload, res) {
             userData.password = hash;
             console.log("après le hash", userData.password);
             let userSign = new user_model(userData);
+            console.log("new user: ", userSign);
             userSign.save(function (err, data) {
-                if (err) return res.json({ message: "email already exist" });
+                if (err) return res.json(err);
                 // else if(err.code != 11000) return res.json({ message: "failed to save" });
                 else res.json(data);
               });
@@ -54,4 +57,19 @@ async function logIn(Payload, res) {
     });
 }
 
-module.exports = { signIn, logIn };
+async function emailVerify(uniqueString, res) {
+	console.log("enter emailVerify");
+	await user_model.find().where('uniqueString').equals(uniqueString).exec(function (err, user) {
+		if(user.length == 0) return res.status(400).json({ message: "User not found" });
+		else {
+			user[0].isValid = true;
+			// console.log("user after find: ", user);
+			new user_model(user[0]).save(function (err, user) {
+				if(err) res.json("error update")
+				else res.json("email verified true");
+			});
+		}
+	});
+}
+
+module.exports = { signIn, logIn, emailVerify };

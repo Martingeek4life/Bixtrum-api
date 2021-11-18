@@ -3,7 +3,7 @@ function DbConnexion() {
 	var mongoose = require('mongoose');
 
 	//Set up default mongoose connection
-	var mongoDB = 'mongodb://127.0.0.1/Bixtrum';
+	var mongoDB = 'mongodb://127.0.0.1/yekiDB';
 	mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {
 	    console.log('Successfully connected to MongoDB Atlas!');
 	})

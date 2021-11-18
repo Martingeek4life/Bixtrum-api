@@ -1,6 +1,8 @@
 const express = require('express');
 const randomId = require('random-id');
 const Ms_UserAuth = require('./Ms_UserAuth/auth');
+const utils = require('./Ms_UserAuth/utils');
+const mailService = require('./Ms_UserAuth/mailService');
 const app = express(),
       bodyParser = require("body-parser"),
       fs = require('fs'),
@@ -9,6 +11,8 @@ const app = express(),
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const customCss = fs.readFileSync((process.cwd()+"/swagger.css"), 'utf8');
+const dotenv = require('dotenv');
+dotenv.config();
 
 // place holder for the data
 let tasks = [
@@ -40,14 +44,30 @@ let tasks = [
 ];
 
 app.use(bodyParser.json());
-app.use('/Bixtrum-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
+app.use('/yeki_auth-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
 
-app.post('/api/user', (req, res) => {
-   const user = req.body.User;
+// register user
+app.post('/api/register', (req, res) => {
+   const user = {
+    email: req.body.User.email,
+    password: req.body.User.password,
+    role: req.body.User.role,
+    uniqueString: "3333",
+    isValid: false
+   };
    console.log("enter");
    console.log("body", user);
    Ms_UserAuth.signIn(user, res);
-})
+   mailService.sendMail(user.email, user.uniqueString);
+   // res.redirect('back');
+});
+
+// email verified
+app.get('/api/verify/:uniqueString', (req, res) => {
+  const uniqueString = req.params.uniqueString;
+  console.log("params uniqueString: ", uniqueString);
+  Ms_UserAuth.emailVerify(uniqueString, res);
+});
 
 app.post('/api/login', (req, res) => {
    const loginData = req.body.loginData;

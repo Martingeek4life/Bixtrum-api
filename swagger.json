@@ -1,9 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is the Bixtrum API Documentation build by Bixterprise",
+        "description": "Yeki authentification API Documentation",
         "version": "1.0.0",
-        "title": "Bixtrum API",
+        "title": "Yeki API",
         "contact": {
             "email": "Bixterprise.com"
         },
@@ -16,7 +16,7 @@
     "host": "localhost:3080",
     "basePath": "/api",
     "paths" : {
-    "/user" : {
+    "/register" : {
             "post" : {
                 "summary" : "SignIn the user",
                 "description": "SignIn the user",
@@ -271,16 +271,19 @@
         "userResponse": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "surname": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "isValid": {
+                    "type": "boolean"
+                },
+                "uniqString": {
                     "type": "string"
                 }
             }
@@ -316,16 +319,19 @@
         "User": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "surname": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "isValid": {
+                    "type": "boolean"
+                },
+                "uniqString": {
                     "type": "string"
                 }
             }
