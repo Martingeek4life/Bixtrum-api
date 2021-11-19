@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const DB_connexion = require('../DB_connection/Db_connection');
 var user_model = require('../Endpoint_models/user');
+var apprenant_model = require('../Endpoint_models/apprenant');
+var ecole_model = require('../Endpoint_models/ecole');
+var formateur_model = require('../Endpoint_models/formateur');
 const mailService = require('./mailService');
 DB_connexion.DbConnexion();
 async function signIn(Payload, res) {
@@ -33,8 +36,33 @@ async function signIn(Payload, res) {
                 if (err) return res.status(403).json({ message: "this e-mail is already registered" });
                 // else if(err.code != 11000) return res.json({ message: "failed to save" });
                 else {
-                    mailService.sendMail(userData.email, userData.uniqueString);
-                    res.json(data);
+                    if(data.role === 'apprenant') {
+                        let userApprenant = new apprenant_model({ idUser: data._id });
+                        userApprenant.save(function (err, apprenant) {
+                            if (err) return res.status(403).json({ message: "failed to register apprenant" });
+                            else res.json(apprenant);
+                            mailService.sendMail(userData.email, userData.uniqueString);
+                        });
+                    }
+
+                    if(data.role === 'ecole') {
+                        let userEcole = new ecole_model({ idUser: data._id });
+                        userEcole.save(function (err, ecole) {
+                            if (err) return res.status(403).json({ message: "failed to register ecole virtuelle" });
+                            else res.json(ecole);
+                            mailService.sendMail(userData.email, userData.uniqueString);
+                        });
+                    }
+
+                    if(data.role === 'formateur') {
+                        let userFormateur = new formateur_model({ idUser: data._id });
+                        userFormateur.save(function (err, formateur) {
+                            if (err) return res.status(403).json({ message: "failed to register formateur" });
+                            else res.json(formateur);
+                            mailService.sendMail(userData.email, userData.uniqueString);
+                        });
+                    }
+                    // res.json(data);
                 }
               });
         });
