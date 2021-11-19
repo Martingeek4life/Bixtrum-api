@@ -2,7 +2,6 @@ const express = require('express');
 const randomId = require('random-id');
 const Ms_UserAuth = require('./Ms_UserAuth/auth');
 const utils = require('./Ms_UserAuth/utils');
-const mailService = require('./Ms_UserAuth/mailService');
 const app = express(),
       bodyParser = require("body-parser"),
       fs = require('fs'),
@@ -48,17 +47,19 @@ app.use('/yeki_auth-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument,
 
 // register user
 app.post('/api/register', (req, res) => {
+  var uniqueString = utils.randString();
+  console.log("uniqueString after initialisation: ", uniqueString);
    const user = {
     email: req.body.User.email,
     password: req.body.User.password,
     role: req.body.User.role,
-    uniqueString: "3333",
+    uniqueString: uniqueString,
     isValid: false
    };
    console.log("enter");
    console.log("body", user);
-   Ms_UserAuth.signIn(user, res);
-   mailService.sendMail(user.email, user.uniqueString);
+   var response = Ms_UserAuth.signIn(user, res);
+   console.log("sign response: ", response);
    // res.redirect('back');
 });
 

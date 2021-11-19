@@ -283,7 +283,7 @@
                 "isValid": {
                     "type": "boolean"
                 },
-                "uniqString": {
+                "uniqueString": {
                     "type": "string"
                 }
             }
@@ -330,9 +330,6 @@
                 },
                 "isValid": {
                     "type": "boolean"
-                },
-                "uniqString": {
-                    "type": "string"
                 }
             }
         },

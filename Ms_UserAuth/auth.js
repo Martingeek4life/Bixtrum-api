@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const DB_connexion = require('../DB_connection/Db_connection');
 var user_model = require('../Endpoint_models/user');
+const mailService = require('./mailService');
 DB_connexion.DbConnexion();
 async function signIn(Payload, res) {
     var userData = {
@@ -29,9 +30,12 @@ async function signIn(Payload, res) {
             let userSign = new user_model(userData);
             console.log("new user: ", userSign);
             userSign.save(function (err, data) {
-                if (err) return res.json(err);
+                if (err) return res.status(403).json({ message: "this e-mail is already registered" });
                 // else if(err.code != 11000) return res.json({ message: "failed to save" });
-                else res.json(data);
+                else {
+                    mailService.sendMail(userData.email, userData.uniqueString);
+                    res.json(data);
+                }
               });
         });
     });
