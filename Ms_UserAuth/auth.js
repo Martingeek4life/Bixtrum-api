@@ -82,8 +82,27 @@ async function logIn(Payload, res) {
             if(bool == true) {
                 if (err) return res.json(err);
                 console.log("data", model);
-                res.json(model[0]);
+                if(model[0].role === 'apprenant') {
+                    apprenant_model.find().where('idUser').equals(model[0]._id).exec(function (err, apprenant) {
+                        if (err) return res.status(403).json({ message: "failed to logged apprenant" });
+                        else res.json(apprenant);
+                    });
+                }
+
+                if(model[0].role === 'formateur') {
+                    formateur_model.find().where('idUser').equals(model[0]._id).exec(function (err, formateur) {
+                        if (err) return res.status(403).json({ message: "failed to logged formateur" });
+                        else res.json(formateur);
+                    });
+                }
             }
+
+                if(model[0].role === 'ecole') {
+                    ecole_model.find().where('idUser').equals(model[0]._id).exec(function (err, ecole) {
+                        if (err) return res.status(403).json({ message: "failed to logged ecole" });
+                        else res.json(ecole);
+                    });
+                }
             else res.status(400).json({ message: "Invalid Password" });
         });
     });
