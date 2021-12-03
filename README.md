@@ -1,1 +1,2 @@
-# Bixtrum-api
+# yarn install
+# yarn start
