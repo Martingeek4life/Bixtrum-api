@@ -5,6 +5,8 @@ var apprenant_model = require('../Endpoint_models/apprenant');
 var ecole_model = require('../Endpoint_models/ecole');
 var formateur_model = require('../Endpoint_models/formateur');
 const mailService = require('./mailService');
+const jwt = require('./jwt');
+
 DB_connexion.DbConnexion();
 async function signIn(Payload, res) {
     var userData = {
@@ -85,7 +87,11 @@ async function logIn(Payload, res) {
                 if(model[0].role === 'apprenant') {
                     apprenant_model.find().where('idUser').equals(model[0]._id).exec(function (err, apprenant) {
                         if (err) return res.status(403).json({ message: "failed to logged apprenant" });
-                        else res.json(apprenant);
+                        else {
+                            const token = jwt.generateAccessToken(apprenant[0].idUser);
+                            console.log("token: ", token)
+                            res.json(apprenant)
+                        };
                     });
                 }
 
